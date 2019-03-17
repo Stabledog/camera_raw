@@ -3,4 +3,27 @@
 # taskrc for Proto-media/camera_raw
 
 
-ffmpeg -i high_left_upper_me_flock_of_bats.MP4 -c copy -ss 00:00:10 -t 00:00:05 test-out.mp4
+# Trim a video at 10 seconds start, 5 seconds duration:
+function cr_trim_video {
+    infile=high_left_upper_me_flock_of_bats
+    outfile=${infile}-trimmed.mp4
+    ffmpeg -i ${infile}.MP4 -c copy -ss 00:00:16 -t 00:00:55 ${outfile}
+}
+
+echo "camera_raw/taskrc sourced at $(date)"
+alias cr_refresh='source $HOME/proto-media/camera_raw/taskrc'
+
+
+
+
+   # 32  ffmpeg
+   # 34  ffmpeg -i high_left_upper_me_flock_of_bats.MP4 -c copy -ss 00:00:10 -t 00:00:05 test-out.mp4
+   # 38  echo "ffmpeg -i high_left_upper_me_flock_of_bats.MP4 -c copy -ss 00:00:10 -t 00:00:05 test-out.mp4" >> taskrc
+   # 85  ffmpeg -i high_left_upper_me_flock_of_bats-trimmed.mp4 -filter:v scale=1280:720 -c:a copy high_left_upper_me_flock_of_bats-trimmed-720p.mp4
+   # 89  ffmpeg -i high_left_upper_me_flock_of_bats-trimmed.mp4 -filter:v scale=1920:1080 -c:a copy high_left_upper_me_flock_of_bats-trimmed-1080p.mp4
+   #
+   # The Miracle-Scan: this produces same resolution, with indistinguishable quality, and order of magnitude
+   # improvement in file size: we should do this to extract media from sd card to raw_camera/ dir:
+   # 92  ffmpeg -i high_left_upper_me_flock_of_bats-trimmed.mp4 -filter:v scale=3840:2160 -c:a copy high_left_upper_me_flock_of_bats-trimmed-2160p.mp4
+   # 96  history | grep ffmp
+   # 97  history | grep ffmp >> taskrc 
