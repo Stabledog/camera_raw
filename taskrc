@@ -1,0 +1,6 @@
+# vim: filetype=sh :
+
+# taskrc for Proto-media/camera_raw
+
+
+ffmpeg -i high_left_upper_me_flock_of_bats.MP4 -c copy -ss 00:00:10 -t 00:00:05 test-out.mp4
