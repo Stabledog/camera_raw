@@ -2,12 +2,50 @@
 
 # taskrc for Proto-media/camera_raw
 
+Ffmpeg=/usr/local/bin/ffmpeg
 
 # Trim a video at 10 seconds start, 5 seconds duration:
+infile=high_left_upper_me_flock_of_bats
+outfile=${infile}-trimmed.mp4
+start_time="0:00"
+end_time="5:00"
+
+function cr_trim_length_args {
+    # Get the args to trim length from [start_mm:ss] [duration_mm:ss]
+    echo "-ss 00:${1} -t 00:${2}"
+}
+
 function cr_trim_video {
-    infile=high_left_upper_me_flock_of_bats
-    outfile=${infile}-trimmed.mp4
-    ffmpeg -i ${infile}.MP4 -c copy -ss 00:00:16 -t 00:00:55 ${outfile}
+    # start_time like 01:13  (1 m 13 seconds from start of clip)
+    # duration like 0:58 (58 seconds of duration)
+    # infile like [infile].MP4
+    # outfile like [infile]-trimmed.MP4
+
+    local time_window=$(cr_trim_length_args $start_time $end_time)
+    local cmd="$Ffmpeg -i ${infile}.MP4 -c copy ${time_window} ${outfile}"
+    echo "$cmd:"
+    $cmd
+}
+
+function cr_videofy_images {
+    # Convert sequence of images to mp4:
+
+    local outmp4=$1
+    [[ -f $outmp4 ]] && return $(errExit "$outmp4 already exists, we can't overwrite")
+
+    # -r: frame rate
+    # -i: [input file printf spec]
+    # -crf: compression factor, e.g. 15-25 refers to percentage of compression 
+
+    #cmd="$Ffmpeg -hide_banner -r 24 -i '%04d.png' -start_number 2 -crf 25 $outmp4"
+    cmd="$Ffmpeg -hide_banner -r 24 -i %04d.png -pix_fmt yuv420p -start_number 2 -crf 10 $outmp4"
+    echo "Command = [$cmd]"
+    $cmd
+}
+
+function cr_dump {
+    # Print info about the given file $1
+    ffprobe -hide_banner -i ${1}
 }
 
 echo "camera_raw/taskrc sourced at $(date)"
